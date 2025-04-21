@@ -1,5 +1,6 @@
 ﻿// ReSharper disable file StringLiteralTypo
 
+using BotwRstb.Generator.Common;
 using BotwRstb.Generator.Extensions;
 using BotwRstb.Generator.ResourceTypes;
 using BotwRstb.Generator.ResourceTypes.MemorySizes;
@@ -7,10 +8,11 @@ using CommunityToolkit.HighPerformance.Buffers;
 using CsYaz0;
 using CsYaz0.Marshalling;
 using Kokuban;
-using Revrs.Buffers;
+using Revrs;
 using Revrs.Extensions;
 using RstbLibrary;
 using RstbLibrary.Helpers;
+using SarcLibrary;
 
 namespace BotwRstb.Generator;
 
@@ -64,8 +66,8 @@ public class RstbGenerator
         Task[] tasks = [
             Task.Run(() => Parallel.ForEachAsync(Directory.EnumerateDirectories(src), async (folder, token) => { await GenerateAsync(folder, root, isAoc); })),
             Task.Run(() => Parallel.ForEachAsync(Directory.EnumerateFiles(src), (file, token) => {
-                uint resourceSize = GetResourceSize(file, root, isAoc, out string canonical);
-                Insert(canonical, resourceSize);
+                uint resourceSize = GetResourceSize(file, root, isAoc, out string canonical, out bool skip);
+                if (!skip) Insert(canonical, resourceSize);
                 return ValueTask.CompletedTask;
             }))
         ];
@@ -100,21 +102,36 @@ public class RstbGenerator
         }
 
         foreach (string file in Directory.EnumerateFiles(src)) {
-            uint resourceSize = GetResourceSize(file, root, isAoc, out string canonical);
-            Insert(canonical, resourceSize);
+            uint resourceSize = GetResourceSize(file, root, isAoc, out string canonical, out bool skip);
+            if (!skip) Insert(canonical, resourceSize);
         }
     }
 
-    private uint GetResourceSize(string file, string root, bool isAoc, out string canonical)
+    private uint GetResourceSize(string file, string root, bool isAoc, out string canonical, out bool skip)
     {
-        Platform platform = _options.Platform;
-        
         using FileStream fs = File.OpenRead(file);
-        uint fileSize = GetFileSize(fs);
-        
         canonical = file.ToCanonical(root, isAoc, out ReadOnlySpan<char> extension);
-        BotwFactoryInfo info = BotwFactoryInfo.Get(canonical, extension, _options.Platform);
+        return GetResourceSize(canonical, extension, isAoc, fs, out skip);
+    }
+    
+    private uint GetResourceSize(string canonical, ReadOnlySpan<char> extension, bool isAoc, DataContainer data, out bool skip)
+    {
+        skip = false;
+        (uint fileSize, bool isSarc) = GetFileInfo(ref data);
+        
+        if (isSarc) {
+            ProcessSarc(ref data, isAoc);
+        }
 
+        if (extension is "pack" or "bgdata" or "txt" or "bgsvdata" or "yml" or "msbt" or "bat" or "ini" or "png" or "bfstm" or "py" or "sh"
+            || canonical is "Pack/ActorInfo.product.byml") {
+            skip = true;
+            return 0;
+        }
+        
+        Platform platform = _options.Platform;
+        BotwFactoryInfo info = BotwFactoryInfo.Get(canonical, extension, _options.Platform);
+        
         Console.WriteLine(
             Chalk.Bold + canonical +
             Chalk.Faint + $" ({extension}) \n  " +
@@ -140,10 +157,7 @@ public class RstbGenerator
             _ => fileSize.Round32()
         };
         
-        using ArraySegmentOwner<byte> dataOwner = ArraySegmentOwner<byte>.Allocate((int)fileSize);
-        
-        Span<byte> data = dataOwner.Segment;
-        fs.ReadExactly(data);
+        // TODO: Impl GetSize functions
 
         return extension switch {
             "baiprog" => rounded + AlignTo(
@@ -215,6 +229,16 @@ public class RstbGenerator
         };
     }
 
+    private void ProcessSarc(ref DataContainer data, bool isAoc)
+    {
+        Sarc sarc = Sarc.FromBinary(data.GetData(decompress: true));
+        foreach ((string name, ArraySegment<byte> entryData) in sarc) {
+            string canonical = name.ToCanonical(isAoc, out ReadOnlySpan<char> extension);
+            uint resourceSize = GetResourceSize(canonical, extension, isAoc, entryData, out bool skip);
+            if (!skip) Insert(canonical, resourceSize);
+        }
+    }
+
     private void Insert(string canonical, uint size)
     {
         if (_result.OverflowTable.ContainsKey(canonical)) {
@@ -247,17 +271,50 @@ public class RstbGenerator
         }
     }
 
-    private static uint GetFileSize(Stream fs)
+    private static (uint Size, bool IsSarc) GetFileInfo(ref DataContainer data)
     {
+        if (data.Stream is not null) {
+            return GetFileInfoFromStream(data.Stream);
+        }
+
+        RevrsReader reader = RevrsReader.Native(data.Data);
+
+        if (reader.Length <= 0) {
+            return (Size: 0, IsSarc: false);
+        }
+        
+        uint magic = reader.Read<uint>();
+        
+        if (magic is Yaz0.MAGIC) {
+            return (Size: reader.Read<uint>(), IsSarc: reader.Read<uint>(0x11) is Sarc.MAGIC);
+        }
+
+        return (Size: (uint)reader.Length, IsSarc: magic is Sarc.MAGIC);
+    }
+
+    private static (uint Size, bool IsSarc) GetFileInfoFromStream(FileStream fs)
+    {
+        bool isSarc;
+        
+        if (fs.Length <= 0) {
+            return (Size: 0, IsSarc: false);
+        }
+        
         try {
             uint magic = fs.Read<uint>();
-            if (magic is Yaz0.MAGIC) return fs.Read<uint>();
+            if (magic is Yaz0.MAGIC) {
+                uint size = fs.Read<uint>();
+                fs.Seek(0x11, SeekOrigin.Begin);
+                return (size, IsSarc: fs.Read<uint>() is Sarc.MAGIC);
+            }
+            
+            isSarc = magic is Sarc.MAGIC;
         }
         finally {
             fs.Seek(0, SeekOrigin.Begin);
         }
         
-        return (uint)fs.Length;
+        return (Size: (uint)fs.Length, isSarc);
     }
     
     

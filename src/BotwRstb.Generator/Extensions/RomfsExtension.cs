@@ -22,7 +22,10 @@ public static class RomfsExtension
         return ToCanonical(path.AsSpan()[romfsLength..], isAoc, out extension);
     }
 
-    private static unsafe string ToCanonical(ReadOnlySpan<char> relativePath, bool isAoc, out ReadOnlySpan<char> extension)
+    public static string ToCanonical(this string relativePath, bool isAoc, out ReadOnlySpan<char> extension)
+        => ToCanonical(relativePath.AsSpan(), isAoc, out extension);
+    
+    public static unsafe string ToCanonical(this ReadOnlySpan<char> relativePath, bool isAoc, out ReadOnlySpan<char> extension)
     {
         extension = Path.GetExtension(relativePath)[1..];
 
