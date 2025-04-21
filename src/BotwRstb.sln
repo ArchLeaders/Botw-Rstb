@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotwRstb", "BotwRstb\BotwRs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotwRstb.Generator", "BotwRstb.Generator\BotwRstb.Generator.csproj", "{37D5A1D3-49C1-4130-8036-BB3FD51E2FA8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{12E2F451-119E-495D-8FAE-FE8B46BA9171}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AampLibrary", "..\lib\AampLibrary\src\AampLibrary\AampLibrary.csproj", "{AE1D3679-E190-479F-8BA5-3BBBF4961C2B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +28,12 @@ Global
 		{37D5A1D3-49C1-4130-8036-BB3FD51E2FA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37D5A1D3-49C1-4130-8036-BB3FD51E2FA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37D5A1D3-49C1-4130-8036-BB3FD51E2FA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE1D3679-E190-479F-8BA5-3BBBF4961C2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE1D3679-E190-479F-8BA5-3BBBF4961C2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE1D3679-E190-479F-8BA5-3BBBF4961C2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE1D3679-E190-479F-8BA5-3BBBF4961C2B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AE1D3679-E190-479F-8BA5-3BBBF4961C2B} = {12E2F451-119E-495D-8FAE-FE8B46BA9171}
 	EndGlobalSection
 EndGlobal

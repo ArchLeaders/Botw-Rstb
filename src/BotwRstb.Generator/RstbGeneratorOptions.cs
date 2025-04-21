@@ -2,4 +2,16 @@
 
 namespace BotwRstb.Generator;
 
-public record RstbGeneratorOptions(string InputRomfs, string InputFile, string? OutputFile = null, uint Padding = 0);
+public enum Platform : byte
+{
+    WiiU,
+    Switch
+}
+
+public record RstbGeneratorOptions(
+    (string Path, bool IsAoc)[] InputContentFolders,
+    string SourceRstbFile,
+    Platform Platform,
+    string? OutputRstbFile = null,
+    uint Padding = 0
+);
