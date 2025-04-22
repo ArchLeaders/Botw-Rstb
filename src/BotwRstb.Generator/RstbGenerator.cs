@@ -241,6 +241,8 @@ public class RstbGenerator
 
     private void Insert(string canonical, uint size)
     {
+        size += _options.Padding;
+        
         if (_result.OverflowTable.ContainsKey(canonical)) {
             lock (_result) {
                 _result.OverflowTable[canonical] = size;
