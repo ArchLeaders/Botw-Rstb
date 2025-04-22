@@ -161,60 +161,60 @@ public class RstbGenerator
 
         return extension switch {
             "baiprog" => rounded + AlignTo(
-                AiProg.GetSize(data, platform),
+                PioAiProg.GetSize(data, platform),
                 info.Alignment
             ),
             "baniminfo" => rounded + AlignTo(
-                AnimInfo.GetSize(data, platform),
+                PioAnimInfo.GetSize(data, platform),
                 info.Alignment
             ),
             "baslist" => rounded + AlignTo(
-                AnimSequenceList.GetSize(data, platform),
+                PioAnimSequenceList.GetSize(data, platform),
                 info.Alignment
             ),
             "bchemical" => rounded + AlignTo(
-                Chemical.GetSize(data, platform),
+                PioChemical.GetSize(data, platform),
                 info.Alignment
             ),
             "bdrop" => rounded + AlignTo(
-                Drop.GetSize(data, platform),
+                PioDrop.GetSize(data, platform),
                 info.Alignment
             ),
             "bfres" => BfresResource.EstimateSize(fileSize, platform),
             "bgparamlist" => rounded + AlignTo(
-                GeneralParamList.GetSize(data, platform),
+                PioGeneralParamList.GetSize(data, platform),
                 info.Alignment
             ),
             "blifecondition" => rounded + AlignTo(
-                LifeCondition.GetSize(data, platform),
+                PioLifeCondition.GetSize(data, platform),
                 info.Alignment
             ),
             "bmodellist" => rounded + AlignTo(
-                ModelList.GetSize(data, platform),
+                PioModelList.GetSize(data, platform),
                 info.Alignment
             ),
             "bphysics" => rounded + AlignTo(
-                Physics.GetSize(data, platform),
+                PioPhysics.GetSize(data, platform),
                 info.Alignment
             ),
             "bphyssb" => rounded + AlignTo(
-                PhysicsSupportBone.GetSize(data, platform),
+                PioPhysicsSupportBone.GetSize(data, platform),
                 info.Alignment
             ),
             "brecipe" => rounded + AlignTo(
-                Recipe.GetSize(data, platform),
+                PioRecipe.GetSize(data, platform),
                 info.Alignment
             ),
             "brgconfiglist" => rounded + AlignTo(
-                RagdollConfigList.GetSize(data, platform),
+                PioRagdollConfigList.GetSize(data, platform),
                 info.Alignment
             ),
             "bshop" => rounded + AlignTo(
-                Shop.GetSize(data, platform),
+                PioShop.GetSize(data, platform),
                 info.Alignment
             ),
             "bxml" => rounded + AlignTo(
-                Xml.GetSize(data, platform),
+                PioXml.GetSize(data, platform),
                 info.Alignment
             ),
             "hknm2" => rounded + platform switch {

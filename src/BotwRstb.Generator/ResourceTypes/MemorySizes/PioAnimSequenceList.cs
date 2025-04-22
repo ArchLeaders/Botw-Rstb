@@ -1,6 +1,6 @@
 namespace BotwRstb.Generator.ResourceTypes.MemorySizes;
 
-public class RagdollConfigList
+public static class PioAnimSequenceList
 {
     public static uint GetSize(Span<byte> data, Platform platform)
     {

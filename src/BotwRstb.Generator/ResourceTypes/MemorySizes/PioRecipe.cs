@@ -1,6 +1,6 @@
 namespace BotwRstb.Generator.ResourceTypes.MemorySizes;
 
-public static class AiProg
+public static class PioRecipe
 {
     public static uint GetSize(Span<byte> data, Platform platform)
     {

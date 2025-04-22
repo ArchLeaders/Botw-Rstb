@@ -1,6 +1,6 @@
 namespace BotwRstb.Generator.ResourceTypes.MemorySizes;
 
-public static class Physics
+public class PioRagdollConfigList
 {
     public static uint GetSize(Span<byte> data, Platform platform)
     {

@@ -1,6 +1,6 @@
 namespace BotwRstb.Generator.ResourceTypes.MemorySizes;
 
-public static class Xml
+public static class PioShop
 {
     public static uint GetSize(Span<byte> data, Platform platform)
     {

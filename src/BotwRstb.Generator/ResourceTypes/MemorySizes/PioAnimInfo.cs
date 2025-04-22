@@ -1,6 +1,6 @@
 namespace BotwRstb.Generator.ResourceTypes.MemorySizes;
 
-public static class GeneralParamList
+public static class PioAnimInfo
 {
     public static uint GetSize(Span<byte> data, Platform platform)
     {
